@@ -43,6 +43,7 @@ const ExplorePage = () => {
             title: n[3],
             description: n[4],
             author: n[5],
+            imgHash : n[6]
           })
 
        
@@ -70,12 +71,18 @@ const ExplorePage = () => {
 
               
                <CardGroup style={{marginTop:"10px"}}>
-                  <Card style={{ width: '18rem',borderRadius:"20px" }}>
+                
+                  <Card style={{ width: '18rem',borderRadius:"20px"}}>
+                  <div style={{display:'flex',alignItems:'center'}}>
+                  <Card.Img style={{width:'18rem'}} variant="top" src={`https://ipfs.infura.io/ipfs/${n.imgHash}`} />
+
                     <Card.Body>
                       <Card.Title >{n.title}</Card.Title>
                       
                     </Card.Body>
+                    </div>
                   </Card>
+                 
                   </CardGroup>
                 </Link>
               </>

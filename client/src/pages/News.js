@@ -40,6 +40,7 @@ const News = () => {
                 title: n[3],
                 description: n[4],
                 author: n[5],
+                imgHash : n[6]
             }
             setArticle(a);
         }
@@ -93,6 +94,7 @@ const News = () => {
                         <i>Published by : {article.author}</i>
                     </div>
                     <h3>{article.title}</h3>
+                    <img src={`https://ipfs.infura.io/ipfs/${article.imgHash}`} alt="Image" />
                     <br />
                     <ButtonGroup>
                         <Button onClick={increaseUpvote}> {article.upVotes} Upvotes</Button>

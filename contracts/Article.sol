@@ -12,6 +12,7 @@ contract Article{
         uint upVotes;
         uint downVotes;
         uint tipAmount;
+        string imgHash;
         address payable author;
         
     }
@@ -22,7 +23,7 @@ contract Article{
 
   
 
-    function addPost(string memory _title,string memory _description) public{
+    function addPost(string memory _title,string memory _description,string memory _img) public{
        posts.length++;
         // Make sure image description exists
         require(bytes(_description).length > 0);
@@ -36,6 +37,7 @@ contract Article{
         p.tipAmount =0;
         p.title = _title;
         p.description = _description;
+        p.imgHash = _img;
 
     }
 
@@ -47,9 +49,9 @@ contract Article{
         posts[postId].downVotes++;
     }
 
-    function getPosts(uint postId) public view returns(uint, uint, uint, string memory, string memory, address ) {
+    function getPosts(uint postId) public view returns(uint, uint, uint, string memory, string memory, address ,string memory) {
        Post storage p = posts[postId];
-       return (p.id, p.upVotes, p.downVotes,p.title, p.description,p.author);
+       return (p.id, p.upVotes, p.downVotes,p.title, p.description,p.author,p.imgHash);
     }
 
     function getPostCount() public view returns(uint){

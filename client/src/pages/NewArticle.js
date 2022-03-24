@@ -6,6 +6,8 @@ import Header from "../components/Header";
 import Footer from "../components/Footer";
 import { Article, web3 } from "../Article";
 import { useNavigate } from "react-router-dom";
+import {create} from 'ipfs-http-client'
+const client = create('https://ipfs.infura.io:5001/api/v0');
 
 
 const Container1 = styled.body`
@@ -36,19 +38,23 @@ const TextWrap = styled.div`
 const NewArticle = () => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+  const[file,setFile] = useState(null);
   const [errorMessage, setErrorMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const history = useNavigate();
 
+  let hash 
   const onSubmit = async (event) => {
     event.preventDefault();
     setLoading(true);
     setErrorMessage("");
     try {
+      const created = await client.add(file);
+      hash = created.path
       const accounts = await web3.eth.getAccounts();
       console.log(accounts)
       await Article.methods
-        .addPost(title,description)
+        .addPost(title,description,hash)
         .send({from: accounts[0] });
         history('/')
 
@@ -57,6 +63,20 @@ const NewArticle = () => {
     }
     setLoading(false);
   };
+
+  const captureImage = (event)=>{
+       
+        
+    const data = event.target.files[0];
+    const reader = new window.FileReader();
+    reader.readAsArrayBuffer(data);
+    reader.onloadend = () => {
+        setFile(Buffer(reader.result));
+    }
+
+    event.preventDefault();
+
+}
   return (
     <>
       <Container1>
@@ -87,6 +107,10 @@ const NewArticle = () => {
               />
             </Form.Field>
 
+            <Form.Field>
+                    <label>Upload Songfile</label>
+                    <input type="file" onChange={captureImage} />
+                </Form.Field>
             <Message error header="OOPS!" content={errorMessage} />
             <div style={{ display: "flex", justifyContent: "center" }}>
               <Button  loading={loading} primary style={{ backgroundColor: "#E85A45" }}>
