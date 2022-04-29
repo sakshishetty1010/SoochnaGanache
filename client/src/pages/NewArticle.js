@@ -108,7 +108,7 @@ const NewArticle = () => {
             </Form.Field>
 
             <Form.Field>
-                    <label>Upload Songfile</label>
+                    <label>Upload Display Picture</label>
                     <input type="file" onChange={captureImage} />
                 </Form.Field>
             <Message error header="OOPS!" content={errorMessage} />

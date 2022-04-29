@@ -5,6 +5,7 @@ import Header from '../components/Header';
 import Footer from '../components/Footer';
 import {Article,web3} from '../Article'
 import { useParams,useNavigate } from 'react-router-dom';
+import VerifiedIcon from '@mui/icons-material/Verified';
 
 const Container1 = styled.body`
   background:#EAE7DC;
@@ -27,11 +28,15 @@ const News = () => {
     const [value,setValue] = useState('')
     const [loading,setLoading] = useState(false)
     const [errorMessage,setErrorMessage] = useState('')
+    const [upvotes,setUpvotes] = useState('')
+    const [ver,setVer] = useState('')
     const history = useNavigate()
   
     useEffect(()=>{
 
         const loadData = async () =>{
+            const accounts = await web3.eth.getAccounts();
+            console.log("Accounts",accounts);
             const n = await Article.methods.getPosts(id).call();
             const a = {
                 id: n[0],
@@ -42,11 +47,14 @@ const News = () => {
                 author: n[5],
                 imgHash : n[6]
             }
+            
+            setUpvotes(n[1]);
+
             setArticle(a);
         }
       
-        loadData()
-       
+        loadData();
+
     
     },[])
 
@@ -65,6 +73,24 @@ const News = () => {
           });
          history(`/Explore/${id}`); 
     }
+
+    const verified = async () => {
+       let n = parseInt(upvotes)
+       try {
+        const ver = await Article.methods.isBadge(n).call();
+        setVer(ver)
+        console.log("Ver",ver)
+       } catch (error) {
+        console.log(error)   
+       }
+   
+    
+
+    }
+
+    useEffect(()=> {
+        verified()
+    },[upvotes])
 
     const onSubmit = async(event)=>{
        event.preventDefault();
@@ -86,14 +112,22 @@ const News = () => {
     }
     return (
         <>
+       
             <Container1>
                 <Header />
                 <Elements>
-               
                     <div>
                         <i>Published by : {article.author}</i>
                     </div>
+
+                    <div style={{display:'flex'}}>
+
+                   
                     <h3>{article.title}</h3>
+                    { ver==='1' && <VerifiedIcon style={{color : '#E85A45'}} />}
+
+                    </div>
+                    
                     <img src={`https://ipfs.infura.io/ipfs/${article.imgHash}`} alt="Image" />
                     <br />
                     <ButtonGroup>

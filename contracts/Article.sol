@@ -4,7 +4,10 @@ pragma solidity ^0.5.0;
 
 contract Article{
     
-    
+    address public owner;
+    uint public lastUser;
+     uint public lastArtist;
+
     struct Post{
         uint id;
         string title;
@@ -16,7 +19,74 @@ contract Article{
         address payable author;
         
     }
+    struct User{
+        uint uId;
+        string name;
+    }
 
+     struct Artist{
+        uint aId;
+        uint uId;
+        address payable artistAddress;
+        string name;
+        uint[] songsUploaded;
+    }
+
+    enum ROLE{UNREGISTERED,ARTIST,USER}      //keep track of type of user
+
+    mapping(uint => Artist) idToArtist;
+    mapping(address => uint)artistId;
+    mapping (address => User) userId;
+
+    modifier onlyUser{
+        require(userId[msg.sender].uId != 0,"Not a user");
+        _;
+    }
+
+    modifier onlyArtist{
+        require(artistId[msg.sender] !=0,"Not an artists");
+        _;
+    }
+
+    constructor() public{
+        owner = msg.sender;
+        lastArtist = 0;
+        lastUser = 0;
+    }
+
+     function getRole() external view returns(ROLE) {
+        return ((artistId[msg.sender]!=0) ? ROLE.ARTIST : (userId[msg.sender].uId != 0) ? ROLE.USER : ROLE.UNREGISTERED);
+    }
+
+     function userRegister(string memory name) public{
+        lastUser+=1;
+        User memory newUser = User(lastUser,name);
+       userId[msg.sender] = newUser;
+    }
+
+    function artistRegister(string calldata _name) external payable{
+        require(msg.value == 0.05 ether, "Artist Registration fee");
+        require(artistId[msg.sender] == 0,"Already register");
+        lastArtist++;
+
+        //every artists is also a user
+        if(userId[msg.sender].uId == 0){
+            userRegister(_name);
+        }
+
+        Artist memory newArtist = Artist(lastArtist,userId[msg.sender].uId,msg.sender,_name,new uint[](0));
+        artistId[msg.sender] = lastArtist;
+        idToArtist[lastArtist] = newArtist;
+    }
+
+    function isBadge(uint upvote) public view returns(uint){
+        if(upvote > lastUser/2)return 1;
+        else return 0;
+    }
+
+ function userDetail() external view returns(uint,string memory){
+        return (userId[msg.sender].uId,userId[msg.sender].name);
+    }
 
 
     Post[] public posts;

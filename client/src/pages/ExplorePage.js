@@ -77,7 +77,9 @@ const ExplorePage = () => {
                   <Card.Img style={{width:'18rem'}} variant="top" src={`https://ipfs.infura.io/ipfs/${n.imgHash}`} />
 
                     <Card.Body>
-                      <Card.Title >{n.title}</Card.Title>
+                      <Card.Title >{n.title}
+                    
+                      </Card.Title>
                       
                     </Card.Body>
                     </div>

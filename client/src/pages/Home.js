@@ -1,10 +1,12 @@
-import React from 'react'
+import React, { useEffect,useState } from 'react'
 import styled from 'styled-components';
 import Header from '../components/Header';
 import logo from '.././images/soochna.svg';
 import { Button } from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
 import Footer from '../components/Footer';
+import {Article,web3} from '../Article'
+
 
 const Container1 = styled.body`
   background:#EAE7DC;
@@ -59,7 +61,54 @@ const BootomLine=styled.p`
     color: black;
     font-size: 30px;
 `
+const Welcomeline=styled.h1`
+    color: #E85A45;
+    font-weight: 500;
+    font-size: 30px;
+    margin-top : 15px
+`
 const Home = () => {
+
+    const [name,setName] = useState('');
+    const [role,setRole] = useState('');
+
+
+    const handleChange = async() => {
+        let accounts = await web3.eth.getAccounts();
+        const role = await Article.methods.getRole().call({from : accounts[0]})
+        setRole(role)
+        let userDetail = await Article.methods.userDetail().call({from : accounts[0]})
+        setName(userDetail[1])
+      }
+
+      const displayRole = () => {
+        console.log("ROLE",role)
+        if(role === '0'){
+            return (
+                <div>
+                <Link to="/registerUser">
+                <Button>Register as User</Button>
+                </Link>
+                   
+                    or
+                    <Link to="/registerJourn">
+                    <Button>Register as Journalist</Button>
+                    </Link>
+                </div>
+            )
+        }
+        else {
+            return (
+                <div>Welcome back {name}</div>
+            )
+        }
+    }
+
+
+    useEffect(()=> {
+        handleChange()
+    })
+   
   return (
     <>
     <Container1>
@@ -70,11 +119,27 @@ const Home = () => {
             <Column1>
             <Topline>Soochna</Topline>
             <BootomLine>A website where you can read news and tip the journalist</BootomLine>
-            <Link to="/Explore"><Button  style={{ backgroundColor: "#E85A45" }} primary>
-                            Explore
-                        </Button></Link>
+            <Link to="/Explore">
+                <Button  style={{ backgroundColor: "#E85A45" }} primary>
+                    Explore
+                </Button>
+            </Link>
+
+            {role=== '1' && 
+            <Link to='/Publish'>
+            <Button>Publish</Button>
+            </Link>
+           }
+            
+                 
+
+            <Welcomeline>{displayRole()}</Welcomeline>
+
             </Column1>
             <Column2>
+          
+
+           
             <img src={logo} width="70%" height="70%" />
             </Column2>
         </HomeRow>
